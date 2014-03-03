@@ -1,10 +1,29 @@
 ;;; ---------- GENERIC SETTINGS
+(delete-selection-mode t)
 
+;;; ---------- MARMALADE PACKAGE ARCHIVE
+(require 'package)
+(add-to-list 'package-archives
+	     '("marmalade" .
+	       "http://marmalade-repo.org/packages/"))
+(package-initialize)
 
-;;; ---------- MODE-SPECIFIC
+;;; ---------- LaTeX - SPECIFIC
+(setq TeX-PDF-mode t)
+
+;;; ---------- C MODE-SPECIFIC
 (setq c-default-style "linux"
       c-basic-offset 4)
 
+;; Autocomplete
+(require 'auto-complete)
+(add-hook 'c-mode-hook (auto-complete-mode 1))
+(add-hook 'c++-mode-hook (auto-complete-mode 1))
+(global-auto-complete-mode t)
+
+;; Flymake
+;;(add-hook 'c-mode-hook flymake-mode)
+;;(add-hook 'c++-mode-hook flymake-mode)
 
 ;;; ---------- KEYBOARD SHORTCUTS
 
@@ -21,6 +40,9 @@
 
 ;; comment/uncomment
 (global-set-key (kbd "C-S-c") 'comment-or-uncomment-region)
+
+;; Auto-fill mode
+(global-set-key [f12] 'auto-fill-mode)
 
 ;; Icarus Verilog and gtkwave
 (global-set-key [f6] 'iverilog-vvp-compile)
