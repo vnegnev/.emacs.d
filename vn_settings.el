@@ -1,3 +1,9 @@
+;;; DO THIS FIRST
+;;; In .emacs, put the following line:
+;;; (load-file "~/.emacs.d/vn_settings.el")
+;;;
+;;; Run M-x package-install auto-complete
+
 ;;; ---------- GENERIC SETTINGS
 (delete-selection-mode t)
 
