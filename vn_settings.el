@@ -63,7 +63,7 @@
   "Pass current verilog file (should be a testbench) to iverilog for compilation."
   (interactive)
   (if (string-equal (file-name-extension (buffer-file-name)) "v")
-      (shell-command(concat "iverilog \"" (buffer-file-name) "\" -o icarus_compile/000_" (file-title) ".compiled" ))
+      (shell-command(concat "iverilog \"" (buffer-file-name) "\" -o icarus_compile/000_" (file-title) ".compiled" " -Wall "))
 					;      (progn (shell-command(concat "iverilog \"" (buffer-file-name) "\" -o icarus_compile/000_" (file-title) ".compiled" ))
 					;	     (shell-command (concat "vvp icarus_compile/000_" (file-title) ".compiled")) )
     (message "File isn't .v!") ) )
@@ -72,7 +72,7 @@
   "Open GTKWAVE on the VCD/LXT2 file corresponding to current buffer, with matching save file (if available)."
   (interactive)
   (if (string-equal (file-name-extension (buffer-file-name)) "v")
-      (progn (shell-command(concat "iverilog \"" (buffer-file-name) "\" -o icarus_compile/000_" (file-title) ".compiled" ))
+      (progn (shell-command(concat "iverilog \"" (buffer-file-name) "\" -o icarus_compile/000_" (file-title) ".compiled"))
 	     (shell-command (concat "vvp icarus_compile/000_" (file-title) ".compiled -lxt2")) ;add -lxt2 for LXT
 	      )
     (message "File isn't .v!") ) )
@@ -81,7 +81,7 @@
   "Open GTKWAVE on the LXT file corresponding to current buffer, with matching save file (if available)."
   (interactive)
   (if (string-equal (file-name-extension (buffer-file-name)) "v")
-      (progn (shell-command(concat "iverilog \"" (buffer-file-name) "\" -o icarus_compile/000_" (file-title) ".compiled" ))
+      (progn (shell-command(concat "iverilog \"" (buffer-file-name) "\" -o icarus_compile/000_" (file-title) ".compiled"))
 	     (shell-command (concat "vvp icarus_compile/000_" (file-title) ".compiled -lxt2")) ;add -lxt2 for LXT
 	     (shell-command (concat "gtkwave icarus_compile/000_" (file-title) ".lxt icarus_compile/001_" (file-title) ".sav &" )) )
     (message "File isn't .v!") ) )
