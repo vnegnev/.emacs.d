@@ -1,5 +1,7 @@
-In .emacs, put the following line:
+In ~/.emacs, put the following line:
 
 (load-file "~/.emacs.d/vn_settings.el")
 
-If you change emacs settings through the GUI, copy the updated settings to vn_settings.el .
+Restart emacs, and run M-x package-install auto-complete .
+
+If you change emacs settings through the GUI, copy the updated settings from ~/.emacs to ~/.emacs.d/vn_settings.el .
