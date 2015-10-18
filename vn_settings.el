@@ -2,7 +2,7 @@
 ;;; In .emacs, put the following line:
 ;;; (load-file "~/.emacs.d/vn_settings.el")
 ;;;
-;;; Run M-x package-install auto-complete
+;;; Run M-x package-install auto-complete smart-tabs-mode
 
 ;;; ---------- GENERIC SETTINGS
 (delete-selection-mode t)
@@ -17,9 +17,18 @@
 ;;; ---------- LaTeX - SPECIFIC
 (setq TeX-PDF-mode t)
 
-;;; ---------- C MODE-SPECIFIC
-(setq c-default-style "linux"
+;;; ---------- C/C++ MODE-SPECIFIC
+
+;; Remove indentation for namespaces
+(defconst my-cc-style
+  '("k&r"
+    (c-offsets-alist . ((innamespace . [0])))))
+(c-add-style "my-cc-mode" my-cc-style)
+(setq c-default-style "my-cc-mode"
       c-basic-offset 4)
+
+;; Smart-tabs mode
+(smart-tabs-insinuate 'c 'c++)
 
 ;; Autocomplete
 (require 'auto-complete)
