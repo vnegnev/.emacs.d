@@ -2,6 +2,10 @@
 ;;; In .emacs, put the following line:
 ;;; (load-file "~/.emacs.d/vn_settings.el")
 ;;;
+;;; Restart emacs
+;;;
+;;; Run M-x package-refresh-contents
+;;;
 ;;; Run M-x package-install auto-complete
 
 ;;; ---------- GENERIC SETTINGS
