@@ -6,24 +6,33 @@
 ;;;
 ;;; Run M-x package-refresh-contents
 ;;;
-;;; Run M-x package-install auto-complete
+;;; Run M-x package-install auto-complete, repeat for smart-tabs-mode
 
 ;;; ---------- GENERIC SETTINGS
 (delete-selection-mode t)
 
 ;;; ---------- MARMALADE PACKAGE ARCHIVE
 (require 'package)
-(add-to-list 'package-archives
-	     '("marmalade" .
-	       "http://marmalade-repo.org/packages/"))
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("marmalade" . "https://marmalade-repo.org/packages/")
+                         ("melpa" . "http://melpa.milkbox.net/packages/")))
 (package-initialize)
 
 ;;; ---------- LaTeX - SPECIFIC
 (setq TeX-PDF-mode t)
 
-;;; ---------- C MODE-SPECIFIC
-(setq c-default-style "linux"
+;;; ---------- C/C++ MODE-SPECIFIC
+
+;; Remove indentation for namespaces
+(defconst my-cc-style
+  '("k&r"
+    (c-offsets-alist . ((innamespace . [0])))))
+(c-add-style "my-cc-mode" my-cc-style)
+(setq c-default-style "my-cc-mode"
       c-basic-offset 4)
+
+;; Smart-tabs mode
+(smart-tabs-insinuate 'c 'c++)
 
 ;; Autocomplete
 (require 'auto-complete)
@@ -57,10 +66,19 @@
 ;; Auto-fill mode
 (global-set-key [f12] 'auto-fill-mode)
 
+;; Unfill paragraph
+(defun unfill-paragraph (&optional region)
+  "Takes a multi-line paragraph and makes it into a single line of text."
+  (interactive (progn (barf-if-buffer-read-only) '(t)))
+  (let ((fill-column (point-max)))
+    (fill-paragraph nil region)))
+(global-set-key (kbd "M-S-q") `unfill-paragraph)
+
 ;; Icarus Verilog and gtkwave
 (global-set-key [f6] 'iverilog-vvp-compile)
-(global-set-key [f7] 'gtkwave-view-current)
-(global-set-key [f8] 'iverilog-run-vvp)
+(global-set-key [f7] 'iverilog-vvp-compile-run-and-wave-view)
+(global-set-key [f8] 'iverilog-vvp-compile-and-run)
+(global-set-key [f9] 'iverilog-wave-view)
 
 (defun file-title()
   "Return file title; eg returns asdf for /otp/asdf.txt ."
@@ -75,8 +93,8 @@
 					;	     (shell-command (concat "vvp icarus_compile/000_" (file-title) ".compiled")) )
     (message "File isn't .v!") ) )
 
-(defun iverilog-run-vvp()
-  "Open GTKWAVE on the VCD/LXT2 file corresponding to current buffer, with matching save file (if available)."
+(defun iverilog-vvp-compile-and-run()
+  "Compile and run current verilog file."
   (interactive)
   (if (string-equal (file-name-extension (buffer-file-name)) "v")
       (progn (shell-command(concat "iverilog -o icarus_compile/000_" (file-title) ".compiled \"" (buffer-file-name) "\" -Wall "))
@@ -84,8 +102,8 @@
 	      )
     (message "File isn't .v!") ) )
 
-(defun gtkwave-view-current()
-  "Open GTKWAVE on the LXT file corresponding to current buffer, with matching save file (if available)."
+(defun iverilog-vvp-compile-run-and-wave-view()
+  "Compile and run current verilog file, then open GTKWAVE on the LXT2 file corresponding to current buffer, with matching save file (if available)."
   (interactive)
   (if (string-equal (file-name-extension (buffer-file-name)) "v")
       (progn (shell-command(concat "iverilog -o icarus_compile/000_" (file-title) ".compiled \"" (buffer-file-name) "\" -Wall "))
@@ -93,9 +111,16 @@
 	     (shell-command (concat "gtkwave icarus_compile/000_" (file-title) ".lxt icarus_compile/001_" (file-title) ".sav &" )) )
     (message "File isn't .v!") ) )
 
-(defun iverilog-clean-files()
+(defun iverilog-wave-view()
+  "Open GTKWAVE on the LXT2 file corresponding to current buffer, with matching save file (if available)."
   (interactive)
+  (if (string-equal (file-name-extension (buffer-file-name)) "v")
+      (shell-command (concat "gtkwave icarus_compile/000_" (file-title) ".lxt icarus_compile/001_" (file-title) ".sav &" ) )
+    (message "File isn't .v!") ) )
+
+(defun iverilog-clean-files()
   "Clean files under the icarus_compile/ directory with extensions .compiled and .lxt"
+  (interactive)
   (if (string-equal (file-name-extension (buffer-file-name)) "v")
   (shell-command (concat "rm -v icarus_compile/*" (file-title) "*.compiled icarus_compile/*" (file-title) "*.lxt")) ; replace with .lxt for LXT
 (message "File isn't .v! Open the .v file whose subfiles you wish to clean!")))
