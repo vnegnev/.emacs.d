@@ -6,7 +6,9 @@
 ;;;
 ;;; Run M-x package-refresh-contents
 ;;;
-;;; Run M-x package-install auto-complete, repeat for smart-tabs-mode
+;;; Run M-x package-install and then install:
+;;; auto-complete, smart-tabs-mode, cmake-mode (general)
+;;; elpy, flycheck, py-autopep8 (python)
 
 ;;; ---------- GENERIC SETTINGS
 (delete-selection-mode t)
@@ -14,12 +16,24 @@
 ;;; ---------- MARMALADE PACKAGE ARCHIVE
 (require 'package)
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                         ("marmalade" . "https://marmalade-repo.org/packages/")
-                         ("melpa" . "http://melpa.milkbox.net/packages/")))
+;;			 ("melpa-stable" . "https://stable.melpa.org/packages/")
+			 ("melpa" . "https://melpa.org/packages/")
+;;                       ("marmalade" . "https://marmalade-repo.org/packages/"))
+			 )
+      )
 (package-initialize)
 
 ;;; ---------- LaTeX - SPECIFIC
 (setq TeX-PDF-mode t)
+
+;;; ---------- PYTHON/IPYTHON - SPECIFIC
+(when (require `elpy nil t)
+  (elpy-enable)
+  (when (require `flycheck nil t)
+    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+    (add-hook 'elpy-mode-hook 'flycheck-mode)
+    )
+  )
 
 ;;; ---------- C/C++ MODE-SPECIFIC
 
