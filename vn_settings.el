@@ -7,13 +7,13 @@
 ;;; Run M-x package-refresh-contents
 ;;;
 ;;; Run M-x package-install and then install:
-;;; auto-complete, smart-tabs-mode, cmake-mode (general)
-;;; elpy, flycheck, py-autopep8 (python)
+;;; auto-complete, smart-tabs-mode (general)
+;;; elpy, py-autopep8 (python)
 
 ;;; ---------- GENERIC SETTINGS
 (delete-selection-mode t)
 
-;;; ---------- MARMALADE PACKAGE ARCHIVE
+;;; ---------- PACKAGE ARCHIVES
 (require 'package)
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
 ;;			 ("melpa-stable" . "https://stable.melpa.org/packages/")
@@ -27,12 +27,24 @@
 (setq TeX-PDF-mode t)
 
 ;;; ---------- PYTHON/IPYTHON - SPECIFIC
-(when (require `elpy nil t)
-  (elpy-enable)
-  (when (require `flycheck nil t)
-    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-    (add-hook 'elpy-mode-hook 'flycheck-mode)
-    )
+(when (require 'elpy nil t)
+  ;; (elpy-enable)
+  ;; (elpy-use-ipython)
+  ;; (when (require 'py-autopep8 nil t)
+  ;;   (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)    
+  ;;   )
+  )
+
+;;; ---------- OB-IPYTHON - SPECIFIC
+(setq org-confirm-babel-evaluate nil) ; no confirmation when code blocks are evaluated in org-mode
+(when (require 'ob-ipython nil t)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((ipython . t)
+     ;; other languages
+     )
+   )
+  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
   )
 
 ;;; ---------- C/C++ MODE-SPECIFIC
