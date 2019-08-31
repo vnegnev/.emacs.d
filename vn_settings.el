@@ -25,6 +25,9 @@
 
 ;;; ---------- LaTeX - SPECIFIC
 (setq TeX-PDF-mode t)
+;(turn-on-visual-line-mode)
+(add-hook 'latex-mode-hook 'turn-on-visual-line-mode) ;; this doesn't work for some reason
+(add-hook 'text-mode-hook 'turn-on-visual-line-mode) ;; this does work for now
 
 ;;; ---------- PYTHON/IPYTHON - SPECIFIC
 (when (require 'elpy nil t)
