@@ -127,7 +127,7 @@
   (interactive)
   (if (string-equal (file-name-extension (buffer-file-name)) "v")
       (progn (shell-command(concat "iverilog -o icarus_compile/000_" (file-title) ".compiled \"" (buffer-file-name) "\" -Wall "))
-	     (shell-command (concat "vvp icarus_compile/000_" (file-title) ".compiled -lxt2")) ;add -lxt2 for LXT
+	     (shell-command (concat "vvp -N icarus_compile/000_" (file-title) ".compiled -lxt2")) ;add -lxt2 for LXT, -N for exiting with error code when $stop is called
 	      )
     (message "File isn't .v!") ) )
 
@@ -136,7 +136,7 @@
   (interactive)
   (if (string-equal (file-name-extension (buffer-file-name)) "v")
       (progn (shell-command(concat "iverilog -o icarus_compile/000_" (file-title) ".compiled \"" (buffer-file-name) "\" -Wall "))
-	     (shell-command (concat "vvp icarus_compile/000_" (file-title) ".compiled -lxt2")) ;add -lxt2 for LXT
+	     (shell-command (concat "vvp -N icarus_compile/000_" (file-title) ".compiled -lxt2")) ;add -lxt2 for LXT, -N for exiting with error code when $stop is called
 	     (shell-command (concat "gtkwave icarus_compile/000_" (file-title) ".lxt icarus_compile/001_" (file-title) ".sav &" )) )
     (message "File isn't .v!") ) )
 
