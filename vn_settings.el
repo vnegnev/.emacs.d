@@ -16,12 +16,15 @@
 ;;; ---------- PACKAGE ARCHIVES
 (require 'package)
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-;;			 ("melpa-stable" . "https://stable.melpa.org/packages/")
-			 ("melpa" . "https://melpa.org/packages/")
+;;			 ("melpa-stable" . "http://stable.melpa.org/packages/")
+			 ("melpa" . "http://melpa.org/packages/")
 ;;                       ("marmalade" . "https://marmalade-repo.org/packages/"))
 			 )
       )
 (package-initialize)
+
+;;; ---------- ORG-MODE SPECIFIC
+(require 'ox-md)
 
 ;;; ---------- LaTeX - SPECIFIC
 (setq TeX-PDF-mode t)
