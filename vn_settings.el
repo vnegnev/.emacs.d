@@ -76,6 +76,17 @@
 ;;(add-hook 'c-mode-hook flymake-mode)
 ;;(add-hook 'c++-mode-hook flymake-mode)
 
+;;; org-babel language support
+(org-babel-do-load-languages
+'org-babel-load-languages
+'((shell . t)))
+
+;;; org-mode markdown export
+(require 'ox-md)
+
+;;; org-mode easy code block templates
+(require 'org-tempo)
+
 ;;; ---------- KEYBOARD SHORTCUTS
 
 ; Flipping windows easily
