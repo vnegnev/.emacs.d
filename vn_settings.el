@@ -9,6 +9,8 @@
 ;;; Run M-x package-install and then install:
 ;;; auto-complete, smart-tabs-mode (general)
 ;;; elpy, py-autopep8 (python)
+;;;
+;;; If you change emacs settings through the GUI, copy the updated settings from ~/.emacs to ~/.emacs.d/vn_settings.el (this file).
 
 ;;; ---------- GENERIC SETTINGS
 (delete-selection-mode t)
@@ -85,6 +87,7 @@
 (require 'ox-md)
 
 ;;; org-mode easy code block templates
+;;; info from https://emacs.stackexchange.com/questions/12841/quickly-insert-source-blocks-in-org-mode
 (require 'org-tempo)
 
 ;;; ---------- KEYBOARD SHORTCUTS
