@@ -23,7 +23,7 @@
 ;;                       ("marmalade" . "https://marmalade-repo.org/packages/"))
 			 )
       )
-(package-initialize)
+;; (package-initialize)
 
 ;;; ---------- ORG-MODE SPECIFIC
 (require 'ox-md)
