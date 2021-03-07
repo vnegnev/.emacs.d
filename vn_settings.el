@@ -120,7 +120,13 @@
     (fill-paragraph nil region)))
 (global-set-key (kbd "M-S-q") `unfill-paragraph)
 
-;; Icarus Verilog and gtkwave
+;; Icarus Verilog and gtkwave in verilog-mode
+
+;; untabify the text
+;; (add-hook 'verilog-mode-hook '(lambda ()
+;;     (add-hook 'local-write-file-hooks (lambda()
+;;        (untabify (point-min) (point-max))))))
+
 (global-set-key [f6] 'iverilog-vvp-compile)
 (global-set-key [f7] 'iverilog-vvp-compile-run-and-wave-view)
 (global-set-key [f8] 'iverilog-vvp-compile-and-run)
@@ -133,43 +139,43 @@
 (defun iverilog-vvp-compile ()
   "Pass current verilog file (should be a testbench) to iverilog for compilation."
   (interactive)
-  (if (string-equal (file-name-extension (buffer-file-name)) "v")
+  (if (or (string= (file-name-extension (buffer-file-name)) "v") (string= (file-name-extension (buffer-file-name)) "sv"))
       (shell-command(concat "iverilog -o icarus_compile/000_" (file-title) ".compiled \"" (buffer-file-name) "\" -Wall -g2005-sv"))
 					;      (progn (shell-command(concat "iverilog \"" (buffer-file-name) "\" -o icarus_compile/000_" (file-title) ".compiled" ))
 					;	     (shell-command (concat "vvp icarus_compile/000_" (file-title) ".compiled")) )
-    (message "File isn't .v!") ) )
+    (message "File isn't .v or .sv!") ) )
 
 (defun iverilog-vvp-compile-and-run()
   "Compile and run current verilog file."
   (interactive)
-  (if (string-equal (file-name-extension (buffer-file-name)) "v")
+  (if (or (string= (file-name-extension (buffer-file-name)) "v") (string= (file-name-extension (buffer-file-name)) "sv"))
       (progn (shell-command(concat "iverilog -o icarus_compile/000_" (file-title) ".compiled \"" (buffer-file-name) "\" -Wall  -g2005-sv"))
 	     (shell-command (concat "vvp -N icarus_compile/000_" (file-title) ".compiled -lxt2")) ;add -lxt2 for LXT, -N for exiting with error code when $stop is called
-	      )
-    (message "File isn't .v!") ) )
+	     )
+    (message "File isn't .v or .sv!") ) )
 
 (defun iverilog-vvp-compile-run-and-wave-view()
   "Compile and run current verilog file, then open GTKWAVE on the LXT2 file corresponding to current buffer, with matching save file (if available)."
   (interactive)
-  (if (string-equal (file-name-extension (buffer-file-name)) "v")
+  (if (or (string= (file-name-extension (buffer-file-name)) "v") (string= (file-name-extension (buffer-file-name)) "sv"))
       (progn (shell-command(concat "iverilog -o icarus_compile/000_" (file-title) ".compiled \"" (buffer-file-name) "\" -Wall  -g2005-sv"))
 	     (shell-command (concat "vvp -N icarus_compile/000_" (file-title) ".compiled -lxt2")) ;add -lxt2 for LXT, -N for exiting with error code when $stop is called
 	     (shell-command (concat "gtkwave icarus_compile/000_" (file-title) ".lxt icarus_compile/001_" (file-title) ".sav &" )) )
-    (message "File isn't .v!") ) )
+    (message "File isn't .v or .sv!") ) )
 
 (defun iverilog-wave-view()
   "Open GTKWAVE on the LXT2 file corresponding to current buffer, with matching save file (if available)."
   (interactive)
-  (if (string-equal (file-name-extension (buffer-file-name)) "v")
+  (if (or (string= (file-name-extension (buffer-file-name)) "v") (string= (file-name-extension (buffer-file-name)) "sv"))
       (shell-command (concat "gtkwave icarus_compile/000_" (file-title) ".lxt icarus_compile/001_" (file-title) ".sav &" ) )
-    (message "File isn't .v!") ) )
+    (message "File isn't .v or .sv!") ) )
 
 (defun iverilog-clean-files()
   "Clean files under the icarus_compile/ directory with extensions .compiled and .lxt"
   (interactive)
-  (if (string-equal (file-name-extension (buffer-file-name)) "v")
+  (if (or (string= (file-name-extension (buffer-file-name)) "v") (string= (file-name-extension (buffer-file-name)) "sv"))
   (shell-command (concat "rm -v icarus_compile/*" (file-title) "*.compiled icarus_compile/*" (file-title) "*.lxt")) ; replace with .lxt for LXT
-(message "File isn't .v! Open the .v file whose subfiles you wish to clean!")))
+  (message "File isn't .v! Open the .v file whose subfiles you wish to clean!")))
 
 ;; Verilog-mode disable semicolon-and-enter behaviour
 
