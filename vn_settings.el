@@ -15,6 +15,9 @@
 ;;; ---------- GENERIC SETTINGS
 (delete-selection-mode t)
 
+(add-hook 'before-save-hook
+          'delete-trailing-whitespace)
+
 ;;; ---------- PACKAGE ARCHIVES
 (require 'package)
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
