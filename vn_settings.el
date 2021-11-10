@@ -9,6 +9,7 @@
 ;;; Run M-x package-install and then install:
 ;;; auto-complete, smart-tabs-mode (general)
 ;;; elpy, py-autopep8 (python)
+;;; rust-mode (rust)
 ;;;
 ;;; If you change emacs settings through the GUI, copy the updated settings from ~/.emacs to ~/.emacs.d/vn_settings.el (this file).
 
@@ -28,6 +29,9 @@
       )
 ;; (package-initialize)
 
+;;; ---------- RUST-MODE SPECIFIC
+(require 'rust-mode)
+
 ;;; ---------- ORG-MODE SPECIFIC
 (require 'ox-md)
 
@@ -42,7 +46,7 @@
   ;; (elpy-enable)
   ;; (elpy-use-ipython)
   ;; (when (require 'py-autopep8 nil t)
-  ;;   (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)    
+  ;;   (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
   ;;   )
   )
 
@@ -96,7 +100,7 @@
 ;;; ---------- KEYBOARD SHORTCUTS
 
 ; Flipping windows easily
-(defun prev-window() 
+(defun prev-window()
   (interactive)
   (other-window -1))
 (global-set-key (kbd "C-;") 'other-window)
@@ -189,8 +193,9 @@
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  '(inhibit-startup-screen t)
+ '(require-final-newline t)
+ '(org-export-backends '(ascii html icalendar latex md odt))
  '(verilog-auto-lineup (quote declarations))
  '(verilog-auto-newline nil)
  '(verilog-highlight-grouping-keywords t)
  '(verilog-highlight-p1800-keywords t))
-
