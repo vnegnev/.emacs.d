@@ -6,10 +6,9 @@
 ;;;
 ;;; Run M-x package-refresh-contents
 ;;;
-;;; Run M-x package-install and then install:
-;;; auto-complete, smart-tabs-mode (general)
-;;; elpy, py-autopep8 (python)
-;;; rust-mode (rust)
+;;; Run M-x package-install and then install: auto-complete, magit,
+;;; smart-tabs-mode (general) elpy, py-autopep8 (python) rust-mode
+;;; (rust)
 ;;;
 ;;; If you change emacs settings through the GUI, copy the updated settings from ~/.emacs to ~/.emacs.d/vn_settings.el (this file).
 
@@ -28,6 +27,12 @@
 			 )
       )
 ;; (package-initialize)
+
+;;; ---------- MAGIT SPECIFIC
+;; (require '
+
+;;; ---------- TRAMP SPECIFIC
+(setq tramp-default-method "ssh")
 
 ;;; ---------- RUST-MODE SPECIFIC
 (require 'rust-mode)
@@ -199,3 +204,26 @@
  '(verilog-auto-newline nil)
  '(verilog-highlight-grouping-keywords t)
  '(verilog-highlight-p1800-keywords t))
+
+;;;;; USEFUL KEYBOARD SHORTCUTS THAT I ALWAYS FORGET
+;;
+;; goto line: M-g g
+;;
+;; VC git blame: C-x v g
+;; VC git checkout revision of file: C-x v ~
+;; VC git diff file with checked-in revision C-x v =
+;; VC git diff file with other revision of file: C-u x v =
+;;
+;; magit status buffer: C-x g
+;; magit help, refresh, up, down: h, g, p, n
+;; magit diff, stage, unstage, commit: spc, s, u, c
+;; magit commit message: C-c C-c
+;; magit fetch from upstream: F u
+;; magit push to upstream: P u
+;; magit log: l
+;; magit branch: b
+;; magit checkout a local branch based on remote (like checkout -b) : b c
+;;
+;; diff reverse direction: R
+;; diff next/previous hunk: n / p
+;; diff apply hunk: C-c C-a
