@@ -6,9 +6,9 @@
 ;;;
 ;;; Run M-x package-refresh-contents
 ;;;
-;;; Run M-x package-install and then install: auto-complete, magit,
-;;; smart-tabs-mode (general) elpy, py-autopep8 (python) rust-mode
-;;; (rust)
+;;; Run M-x package-install and then install: use-package,
+;;; auto-complete, magit, smart-tabs-mode (general) elpy, py-autopep8
+;;; (python), rust-mode (rust)
 ;;;
 ;;; If you change emacs settings through the GUI, copy the updated settings from ~/.emacs to ~/.emacs.d/vn_settings.el (this file).
 
@@ -28,6 +28,13 @@
       )
 ;; (package-initialize)
 
+;;; ---------- USE-PACKAGE FOR PACKAGE MANAGEMENT
+
+(eval-when-compile
+  ;; Following line is not needed if use-package.el is in ~/.emacs.d
+  ; (add-to-list 'load-path "<path where use-package is installed>")
+  (require 'use-package))
+
 ;;; ---------- MAGIT SPECIFIC
 ;; (require '
 
@@ -38,7 +45,20 @@
 (require 'rust-mode)
 
 ;;; ---------- ORG-MODE SPECIFIC
+
+;; org-babel language support
+(org-babel-do-load-languages
+'org-babel-load-languages
+'((shell . t)))
+
+;; org-mode markdown export
 (require 'ox-md)
+
+;; org-mode easy code block templates
+;; info from https://emacs.stackexchange.com/questions/12841/quickly-insert-source-blocks-in-org-mode
+;; (require 'org-tempo)
+;; replacement info: https://emacs.stackexchange.com/questions/46988/why-do-easy-templates-e-g-s-tab-in-org-9-2-not-work
+;; in new org-mode, use C-c C-,
 
 ;;; ---------- LaTeX - SPECIFIC
 (setq TeX-PDF-mode t)
@@ -47,13 +67,26 @@
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode) ;; this does work for now
 
 ;;; ---------- PYTHON/IPYTHON - SPECIFIC
-(when (require 'elpy nil t)
+(setq-default fill-column 80)
+;;; DISABLE ELPY TEMPORARILY
+;; (use-package elpy
+;;   :ensure t
+;;   :init
+;;   (elpy-enable))
+
+;;;; Black auto code formatter (can be handled by elpy)
+;; (use-package python-black
+;;   :demand t
+;;   :after python
+;;   :hook (python-mode . python-black-on-save-mode-enable-dwim))
+
+;;(when (require 'elpy nil t)
   ;; (elpy-enable)
   ;; (elpy-use-ipython)
   ;; (when (require 'py-autopep8 nil t)
   ;;   (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
   ;;   )
-  )
+;;  )
 
 ;;; ---------- OB-IPYTHON - SPECIFIC
 (setq org-confirm-babel-evaluate nil) ; no confirmation when code blocks are evaluated in org-mode
@@ -89,18 +122,6 @@
 ;; Flymake
 ;;(add-hook 'c-mode-hook flymake-mode)
 ;;(add-hook 'c++-mode-hook flymake-mode)
-
-;;; org-babel language support
-(org-babel-do-load-languages
-'org-babel-load-languages
-'((shell . t)))
-
-;;; org-mode markdown export
-(require 'ox-md)
-
-;;; org-mode easy code block templates
-;;; info from https://emacs.stackexchange.com/questions/12841/quickly-insert-source-blocks-in-org-mode
-(require 'org-tempo)
 
 ;;; ---------- KEYBOARD SHORTCUTS
 
@@ -216,18 +237,31 @@
 ;;
 ;; magit status buffer: C-x g
 ;; magit help, refresh, up, down: h, g, p, n
-;; magit diff, stage, unstage, commit: spc, s, u, c
+;; magit diff, stage, unstage: spc, s, u
+;; magit commit, c
 ;; magit commit message: C-c C-c
 ;; magit fetch from upstream: F u
 ;; magit push to upstream: P u
 ;; magit log: l
 ;; magit branch: b
+;; magit checkout a branch / local branch: b b / b l
 ;; magit checkout a local branch based on remote (like checkout -b) : b c
+;; magit merge: m
 ;;
 ;; diff reverse direction: R
 ;; diff next/previous hunk: n / p
 ;; diff apply hunk: C-c C-a
 ;;
+;; org-mode src block: C-c C-, s
+;;
+;; elpy-black-fix-code: M-x elpy-black-fix-code
+;;
+;; emacs set macro counter to number: C-x C-k C-c <num>
+;; emacs add number to macro counter: C-x C-k C-a <num>
+;; emacs insert macro counter and don't increment it: C-u 0 C-x C-k TAB
 ;;
 ;;;;; USEFUL LINUX TIPS AND TRICKS
+;;
 ;; Search for a file in pacman: pacman -F <file>
+;;
+;; Use Mac keyboard in Arch Linux more conveniently: setxkbmap -option altwin:left_meta_win [does not work for all keybindings]
