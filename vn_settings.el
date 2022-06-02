@@ -227,3 +227,7 @@
 ;; diff reverse direction: R
 ;; diff next/previous hunk: n / p
 ;; diff apply hunk: C-c C-a
+;;
+;;
+;;;;; USEFUL LINUX TIPS AND TRICKS
+;; Search for a file in pacman: pacman -F <file>
