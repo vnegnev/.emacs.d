@@ -53,6 +53,7 @@
 
 ;; org-mode markdown export
 (require 'ox-md)
+(global-set-key (kbd "C-c a") 'org-agenda)
 
 ;; org-mode easy code block templates
 ;; info from https://emacs.stackexchange.com/questions/12841/quickly-insert-source-blocks-in-org-mode
@@ -253,12 +254,14 @@
 ;; diff apply hunk: C-c C-a
 ;;
 ;; org-mode src block: C-c C-, s
+;; org-mode agenda: C-c a
 ;;
 ;; elpy-black-fix-code: M-x elpy-black-fix-code
 ;;
 ;; emacs set macro counter to number: C-x C-k C-c <num>
 ;; emacs add number to macro counter: C-x C-k C-a <num>
 ;; emacs insert macro counter and don't increment it: C-u 0 C-x C-k TAB
+;; emacs swap characters: C-t
 ;;
 ;;;;; USEFUL LINUX TIPS AND TRICKS
 ;;
