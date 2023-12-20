@@ -229,6 +229,8 @@
 
 ;;;;; USEFUL KEYBOARD SHORTCUTS THAT I ALWAYS FORGET
 ;;
+;; newline character in search: C-q C-j
+;;
 ;; goto line: M-g g
 ;;
 ;; VC git blame: C-x v g
