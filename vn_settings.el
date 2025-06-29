@@ -264,6 +264,7 @@
 ;; emacs add number to macro counter: C-x C-k C-a <num>
 ;; emacs insert macro counter and don't increment it: C-u 0 C-x C-k TAB
 ;; emacs swap characters: C-t
+;; emacs shell comint clear buffer: C-c M-o
 ;;
 ;;;;; USEFUL LINUX TIPS AND TRICKS
 ;;
