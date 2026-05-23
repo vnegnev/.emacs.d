@@ -1,224 +1,178 @@
+;;; vn_settings.el --- Vlad's Emacs settings -*- lexical-binding: t; -*-
+
 ;;; DO THIS FIRST
-;;; In .emacs, put the following line:
-;;; (load-file "~/.emacs.d/vn_settings.el")
+;;; In .emacs (or init.el), put the following line:
+;;;   (load "~/.emacs.d/vn_settings")
 ;;;
-;;; Restart emacs
+;;; Restart emacs.  use-package is built in to Emacs 29+ — for older
+;;; Emacs the snippet below will install it.  Other packages to install
+;;; with M-x package-install: magit, smart-tabs-mode, elpy, py-autopep8
+;;; (python), rust-mode (rust).
 ;;;
-;;; Run M-x package-refresh-contents
-;;;
-;;; Run M-x package-install and then install: use-package,
-;;; auto-complete, magit, smart-tabs-mode (general) elpy, py-autopep8
-;;; (python), rust-mode (rust)
-;;;
-;;; If you change emacs settings through the GUI, copy the updated settings from ~/.emacs to ~/.emacs.d/vn_settings.el (this file).
-
-;;; ---------- GENERIC SETTINGS
-(delete-selection-mode t)
-
-(add-hook 'before-save-hook
-          'delete-trailing-whitespace)
+;;; If you change emacs settings through the GUI, copy the updated
+;;; settings from ~/.emacs to ~/.emacs.d/vn_settings.el (this file).
 
 ;;; ---------- PACKAGE ARCHIVES
 (require 'package)
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-;;			 ("melpa-stable" . "http://stable.melpa.org/packages/")
-			 ("melpa" . "http://melpa.org/packages/")
-;;                       ("marmalade" . "https://marmalade-repo.org/packages/"))
-			 )
-      )
-;; (package-initialize)
+(setq package-archives '(("gnu"   . "https://elpa.gnu.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")))
+;; Emacs 27+ auto-runs package-initialize before init; no explicit call needed.
 
-;;; ---------- USE-PACKAGE FOR PACKAGE MANAGEMENT
-
-(eval-when-compile
-  ;; Following line is not needed if use-package.el is in ~/.emacs.d
-  ; (add-to-list 'load-path "<path where use-package is installed>")
+(unless (require 'use-package nil 'noerror)
+  (package-refresh-contents)
+  (package-install 'use-package)
   (require 'use-package))
 
-;;; ---------- MAGIT SPECIFIC
-;; (require '
+;; Most packages should load lazily; override with :demand t when needed.
+(setq use-package-always-defer t)
 
-;;; ---------- TRAMP SPECIFIC
+;;; ---------- GENERIC SETTINGS
+(delete-selection-mode 1)
+(add-hook 'before-save-hook #'delete-trailing-whitespace)
+(setq-default fill-column 80)
+
+;;; ---------- TRAMP
 (setq tramp-default-method "ssh")
 
-;;; ---------- RUST-MODE SPECIFIC
-(require 'rust-mode)
+;;; ---------- COMPLETION (company)
+(use-package company
+  :hook (after-init . global-company-mode))
 
-;;; ---------- ORG-MODE SPECIFIC
+;;; ---------- RUST
+(use-package rust-mode
+  :mode "\\.rs\\'")
 
-;; org-babel language support
-(org-babel-do-load-languages
-'org-babel-load-languages
-'((shell . t)))
-
-;; org-mode markdown export
-(require 'ox-md)
-(global-set-key (kbd "C-c a") 'org-agenda)
-
-;; org-mode easy code block templates
-;; info from https://emacs.stackexchange.com/questions/12841/quickly-insert-source-blocks-in-org-mode
-;; (require 'org-tempo)
-;; replacement info: https://emacs.stackexchange.com/questions/46988/why-do-easy-templates-e-g-s-tab-in-org-9-2-not-work
-;; in new org-mode, use C-c C-,
-
-;;; ---------- LaTeX - SPECIFIC
-(setq TeX-PDF-mode t)
-;(turn-on-visual-line-mode)
-(add-hook 'latex-mode-hook 'turn-on-visual-line-mode) ;; this doesn't work for some reason
-(add-hook 'text-mode-hook 'turn-on-visual-line-mode) ;; this does work for now
-
-;;; ---------- PYTHON/IPYTHON - SPECIFIC
-(setq-default fill-column 80)
-;;; DISABLE ELPY TEMPORARILY
-;; (use-package elpy
-;;   :ensure t
-;;   :init
-;;   (elpy-enable))
-
-;;;; Black auto code formatter (can be handled by elpy)
-;; (use-package python-black
-;;   :demand t
-;;   :after python
-;;   :hook (python-mode . python-black-on-save-mode-enable-dwim))
-
-;;(when (require 'elpy nil t)
-  ;; (elpy-enable)
-  ;; (elpy-use-ipython)
-  ;; (when (require 'py-autopep8 nil t)
-  ;;   (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
-  ;;   )
-;;  )
-
-;;; ---------- OB-IPYTHON - SPECIFIC
-(setq org-confirm-babel-evaluate nil) ; no confirmation when code blocks are evaluated in org-mode
-(when (require 'ob-ipython nil t)
+;;; ---------- ORG
+(use-package org
+  :bind ("C-c a" . org-agenda)
+  :config
+  (require 'ox-md)
+  (setq org-confirm-babel-evaluate nil)
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((ipython . t)
-     ;; other languages
-     )
-   )
-  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
-  )
+   '((shell . t))))
+;; org-mode easy code block templates: use C-c C-, (since org 9.2)
 
-;;; ---------- C/C++ MODE-SPECIFIC
+;;; ---------- LaTeX / Text
+(setq TeX-PDF-mode t)
+;; LaTeX-mode (AUCTeX) and latex-mode both derive from text-mode, so this covers both.
+(add-hook 'text-mode-hook #'turn-on-visual-line-mode)
 
-;; Remove indentation for namespaces
+;;; ---------- C/C++
 (defconst my-cc-style
   '("k&r"
     (c-offsets-alist . ((innamespace . [0])))))
 (c-add-style "my-cc-mode" my-cc-style)
 (setq c-default-style "my-cc-mode"
       c-basic-offset 4)
-
-;; Smart-tabs mode
-(smart-tabs-insinuate 'c 'c++)
-
-;; Autocomplete
-(require 'auto-complete)
-(add-hook 'c-mode-hook (auto-complete-mode 1))
-(add-hook 'c++-mode-hook (auto-complete-mode 1))
-(global-auto-complete-mode t)
-
-;; Flymake
-;;(add-hook 'c-mode-hook flymake-mode)
-;;(add-hook 'c++-mode-hook flymake-mode)
+;; (smart-tabs-insinuate 'c 'c++)
 
 ;;; ---------- KEYBOARD SHORTCUTS
 
-; Flipping windows easily
-(defun prev-window()
+;; Window flipping
+(defun prev-window ()
+  "Switch to previous window."
   (interactive)
   (other-window -1))
-(global-set-key (kbd "C-;") 'other-window)
-(global-set-key (kbd "C-'") 'prev-window)
+(global-set-key (kbd "C-;") #'other-window)
+(global-set-key (kbd "C-'") #'prev-window)
+(define-key (current-global-map) [remap org-cycle-agenda-files] #'prev-window)
+(define-key (current-global-map) [remap electric-verilog-semi-with-comment] #'other-window)
 
-; rebind org-mode and verilog-mode keys
-(define-key (current-global-map) [remap org-cycle-agenda-files] 'prev-window)
-(define-key (current-global-map) [remap electric-verilog-semi-with-comment] 'other-window)
+;; Comment / uncomment
+(global-set-key (kbd "C-S-c") #'comment-or-uncomment-region)
 
-;; comment/uncomment
-(global-set-key (kbd "C-S-c") 'comment-or-uncomment-region)
-
-;; recompile
-(global-set-key (kbd "C-)") 'recompile)
+;; Recompile
+(global-set-key (kbd "C-)") #'recompile)
 
 ;; Auto-fill mode
-(global-set-key [f12] 'auto-fill-mode)
+(global-set-key [f12] #'auto-fill-mode)
 
 ;; Unfill paragraph
 (defun unfill-paragraph (&optional region)
-  "Takes a multi-line paragraph and makes it into a single line of text."
+  "Take a multi-line paragraph and make it into a single line of text."
   (interactive (progn (barf-if-buffer-read-only) '(t)))
   (let ((fill-column (point-max)))
     (fill-paragraph nil region)))
-(global-set-key (kbd "M-S-q") `unfill-paragraph)
+(global-set-key (kbd "M-S-q") #'unfill-paragraph)
 
-;; Icarus Verilog and gtkwave in verilog-mode
+;;; ---------- VERILOG / IVERILOG
 
-;; untabify the text
-;; (add-hook 'verilog-mode-hook '(lambda ()
-;;     (add-hook 'local-write-file-hooks (lambda()
-;;        (untabify (point-min) (point-max))))))
-
-(global-set-key [f6] 'iverilog-vvp-compile)
-(global-set-key [f7] 'iverilog-vvp-compile-run-and-wave-view)
-(global-set-key [f8] 'iverilog-vvp-compile-and-run)
-(global-set-key [f9] 'iverilog-wave-view)
-
-(defun file-title()
+(defun file-title ()
   "Return file title; eg returns asdf for /otp/asdf.txt ."
-  (file-name-sans-extension(file-name-nondirectory (buffer-file-name))))
+  (file-name-sans-extension (file-name-nondirectory (buffer-file-name))))
+
+(defun vn--verilog-buffer-p ()
+  "Non-nil if the current buffer visits a .v or .sv file."
+  (let ((ext (file-name-extension (or (buffer-file-name) ""))))
+    (or (string= ext "v") (string= ext "sv"))))
 
 (defun iverilog-vvp-compile ()
   "Pass current verilog file (should be a testbench) to iverilog for compilation."
   (interactive)
-  (if (or (string= (file-name-extension (buffer-file-name)) "v") (string= (file-name-extension (buffer-file-name)) "sv"))
-      (shell-command(concat "iverilog -o icarus_compile/000_" (file-title) ".compiled \"" (buffer-file-name) "\" -Wall -g2005-sv"))
-					;      (progn (shell-command(concat "iverilog \"" (buffer-file-name) "\" -o icarus_compile/000_" (file-title) ".compiled" ))
-					;	     (shell-command (concat "vvp icarus_compile/000_" (file-title) ".compiled")) )
-    (message "File isn't .v or .sv!") ) )
+  (if (vn--verilog-buffer-p)
+      (shell-command
+       (concat "iverilog -o icarus_compile/000_" (file-title)
+               ".compiled \"" (buffer-file-name) "\" -Wall -g2005-sv"))
+    (message "File isn't .v or .sv!")))
 
-(defun iverilog-vvp-compile-and-run()
+(defun iverilog-vvp-compile-and-run ()
   "Compile and run current verilog file."
   (interactive)
-  (if (or (string= (file-name-extension (buffer-file-name)) "v") (string= (file-name-extension (buffer-file-name)) "sv"))
-      (progn (shell-command(concat "iverilog -o icarus_compile/000_" (file-title) ".compiled \"" (buffer-file-name) "\" -Wall  -g2005-sv"))
-	     (shell-command (concat "vvp -N icarus_compile/000_" (file-title) ".compiled -lxt2")) ;add -lxt2 for LXT, -N for exiting with error code when $stop is called
-	     )
-    (message "File isn't .v or .sv!") ) )
+  (if (vn--verilog-buffer-p)
+      (progn
+        (shell-command
+         (concat "iverilog -o icarus_compile/000_" (file-title)
+                 ".compiled \"" (buffer-file-name) "\" -Wall -g2005-sv"))
+        ;; -lxt2 for LXT, -N to exit with error code when $stop is called.
+        (shell-command
+         (concat "vvp -N icarus_compile/000_" (file-title) ".compiled -lxt2")))
+    (message "File isn't .v or .sv!")))
 
-(defun iverilog-vvp-compile-run-and-wave-view()
-  "Compile and run current verilog file, then open GTKWAVE on the LXT2 file corresponding to current buffer, with matching save file (if available)."
+(defun iverilog-vvp-compile-run-and-wave-view ()
+  "Compile and run current verilog file, then open GTKWAVE on the LXT2 file."
   (interactive)
-  (if (or (string= (file-name-extension (buffer-file-name)) "v") (string= (file-name-extension (buffer-file-name)) "sv"))
-      (progn (shell-command(concat "iverilog -o icarus_compile/000_" (file-title) ".compiled \"" (buffer-file-name) "\" -Wall  -g2005-sv"))
-	     (shell-command (concat "vvp -N icarus_compile/000_" (file-title) ".compiled -lxt2")) ;add -lxt2 for LXT, -N for exiting with error code when $stop is called
-	     (shell-command (concat "gtkwave icarus_compile/000_" (file-title) ".lxt icarus_compile/001_" (file-title) ".sav &" )) )
-    (message "File isn't .v or .sv!") ) )
+  (if (vn--verilog-buffer-p)
+      (progn
+        (shell-command
+         (concat "iverilog -o icarus_compile/000_" (file-title)
+                 ".compiled \"" (buffer-file-name) "\" -Wall -g2005-sv"))
+        (shell-command
+         (concat "vvp -N icarus_compile/000_" (file-title) ".compiled -lxt2"))
+        (shell-command
+         (concat "gtkwave icarus_compile/000_" (file-title)
+                 ".lxt icarus_compile/001_" (file-title) ".sav &")))
+    (message "File isn't .v or .sv!")))
 
-(defun iverilog-wave-view()
-  "Open GTKWAVE on the LXT2 file corresponding to current buffer, with matching save file (if available)."
+(defun iverilog-wave-view ()
+  "Open GTKWAVE on the LXT2 file corresponding to current buffer."
   (interactive)
-  (if (or (string= (file-name-extension (buffer-file-name)) "v") (string= (file-name-extension (buffer-file-name)) "sv"))
-      (shell-command (concat "gtkwave icarus_compile/000_" (file-title) ".lxt icarus_compile/001_" (file-title) ".sav &" ) )
-    (message "File isn't .v or .sv!") ) )
+  (if (vn--verilog-buffer-p)
+      (shell-command
+       (concat "gtkwave icarus_compile/000_" (file-title)
+               ".lxt icarus_compile/001_" (file-title) ".sav &"))
+    (message "File isn't .v or .sv!")))
 
-(defun iverilog-clean-files()
-  "Clean files under the icarus_compile/ directory with extensions .compiled and .lxt"
+(defun iverilog-clean-files ()
+  "Clean files under icarus_compile/ with extensions .compiled and .lxt."
   (interactive)
-  (if (or (string= (file-name-extension (buffer-file-name)) "v") (string= (file-name-extension (buffer-file-name)) "sv"))
-  (shell-command (concat "rm -v icarus_compile/*" (file-title) "*.compiled icarus_compile/*" (file-title) "*.lxt")) ; replace with .lxt for LXT
-  (message "File isn't .v! Open the .v file whose subfiles you wish to clean!")))
+  (if (vn--verilog-buffer-p)
+      (shell-command
+       (concat "rm -v icarus_compile/*" (file-title) "*.compiled "
+               "icarus_compile/*" (file-title) "*.lxt"))
+    (message "File isn't .v! Open the .v file whose subfiles you wish to clean!")))
 
-;; Verilog-mode disable semicolon-and-enter behaviour
+(global-set-key [f6] #'iverilog-vvp-compile)
+(global-set-key [f7] #'iverilog-vvp-compile-run-and-wave-view)
+(global-set-key [f8] #'iverilog-vvp-compile-and-run)
+(global-set-key [f9] #'iverilog-wave-view)
 
-;;Verilog-mode customisations
+;;; ---------- CUSTOM
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(inhibit-startup-screen t)
  '(require-final-newline t)
  '(org-export-backends '(ascii html icalendar latex md odt))
@@ -226,6 +180,8 @@
  '(verilog-auto-newline nil)
  '(verilog-highlight-grouping-keywords t)
  '(verilog-highlight-p1800-keywords t))
+
+(provide 'vn_settings)
 
 ;;;;; USEFUL KEYBOARD SHORTCUTS THAT I ALWAYS FORGET
 ;;
@@ -271,3 +227,5 @@
 ;; Search for a file in pacman: pacman -F <file>
 ;;
 ;; Use Mac keyboard in Arch Linux more conveniently: setxkbmap -option altwin:left_meta_win [does not work for all keybindings]
+
+;;; vn_settings.el ends here
